@@ -25,7 +25,6 @@ func mergeSort(items []int) []int {
 	return merge(first, second)
 }
 
-
 // merge is where the actual sorting happens.
 
 func merge(first []int, second []int) []int {
