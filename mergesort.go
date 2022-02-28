@@ -1,11 +1,15 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"math/rand"
+)
 
 func main() {
-	notSorted := []int{10,3,6,5,9,2,8,1}
-	sorted := mergeSort(notSorted)
-	fmt.Print(sorted)
+	var unsorted = rand.Perm(100)
+	fmt.Println("Unsorted array:", unsorted)
+	sorted := mergeSort(unsorted)
+	fmt.Println("Sorted array:", sorted)
 }
 
 /*
@@ -14,47 +18,57 @@ func main() {
 
 	items []int: an array of integers that are not sorted.
  */
-func mergeSort(items []int) []int {
-	if len(items) < 2 {
-		return items
+func mergeSort(unsorted []int) []int {
+	if len(unsorted) < 2 {
+		return unsorted
 	}
-	mid := len(items)/2
-	first := mergeSort(items[:mid])
-	// When it reaches second for the first time, items on the stack has a length of 2
-	second := mergeSort(items[mid:])
-	return merge(first, second)
+	mid := len(unsorted)/2
+	leftSide := mergeSort(unsorted[:mid])
+	// When it reaches rightSide for the leftSide time, unsorted on the stack has a length of 2
+	rightSide := mergeSort(unsorted[mid:])
+	return merge(leftSide, rightSide)
 }
 
 // merge is where the actual sorting happens.
 
-func merge(first []int, second []int) []int {
-	var final []int
-	f := 0
-	s := 0
+func merge(left []int, right []int) []int {
+	var sorted []int
+	leftIndex := 0
+	rightIndex := 0
 
 	/*
-		When it reaches the for loop for the first time, both first and second
-		have one item, and second has a value of 3, and first has a value of 10
-		and so itll skip the if clause and append 3 to final.
+		When it reaches the for loop for the left time, both left and right
+		have one item, and right has a value of 3, and left has a value of 10
+		and so itll skip the if clause and append 3 to sorted.
 	 */
-	for f < len(first) && s < len(second) {
-		if first[f] < second[s] {
-			final = append(final, first[f])
-			f++
+	for leftIndex < len(left) && rightIndex < len(right) {
+		leftElement := left[leftIndex]
+		rightElement := right[rightIndex]
+
+		if leftElement < rightElement {
+			sorted = append(sorted, leftElement)
+			leftIndex++
+		} else if leftElement > rightElement {
+			sorted = append(sorted, rightElement)
+			rightIndex++
 		} else {
-			final = append(final, second[s])
-			s++
+			sorted = append(sorted, leftElement)
+			leftIndex++
+			sorted = append(sorted, rightElement)
+			rightIndex++
 		}
 	}
-	// f did not get incremented, but s did, so its going to append f to final
-	for ; f < len(first); f++ {
-		final = append(final, first[f])
+	// leftIndex did not get incremented, but rightIndex did, so its going to append leftIndex to sorted
+	for leftIndex < len(left) {
+		sorted = append(sorted, left[leftIndex])
+		leftIndex++
 	}
-	// since s got incremented, 1 = 1, and thus nothing happens here
-	for ; s < len(second); s++ {
-		final = append(final, second[s])
+	// since rightIndex got incremented, 1 = 1, and thus nothing happens here
+	for rightIndex < len(right) {
+		sorted = append(sorted, right[rightIndex])
+		rightIndex++
 	}
 	// we return [3,10]
-	return final
+	return sorted
 }
 
